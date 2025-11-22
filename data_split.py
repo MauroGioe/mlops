@@ -10,6 +10,6 @@ test = test_prod.sample(frac=0.50,random_state=200)
 prod=test_prod.drop(test.index)
 
 
-train.to_csv("./data/train.csv")
-test.to_csv("./data/test.csv")
-prod.to_csv("./data/prod.csv")
+train.to_csv("./data/train.csv", index=False)
+test.to_csv("./data/test.csv", index=False)
+prod.to_csv("./data/prod.csv", index=False)
