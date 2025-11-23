@@ -2,6 +2,7 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import f1_score,precision_score,recall_score
+from sklearn.inspection import permutation_importance
 import mlflow
 import pickle
 
@@ -52,10 +53,16 @@ for i,run in enumerate(results):
             f1 = f1_score(y_test, y_predict)
             precision = precision_score(y_test, y_predict)
             recall = recall_score(y_test, y_predict)
-            best_metrics ={"test f1-score":f1, "test precision":precision, "test recall":recall}
+            best_metrics = {"test f1-score":f1, "test precision":precision, "test recall":recall}
             mlflow.log_metrics(best_metrics)
             mlflow.sklearn.log_model(sk_model=best_model, name="xgboost", input_example=X_train,
                                      registered_model_name="xgboost")
 
     mlflow.end_run()
 
+perm_importance = permutation_importance(best_model, X_test, y_test, scoring = "f1")
+sorted_idx = perm_importance.importances_mean.argsort()
+list(zip(X_test.columns[sorted_idx], perm_importance.importances_mean[sorted_idx]))[::-1]
+top_features = X_test.columns[sorted_idx][::-1][:4].to_list()
+with open('top_features.pkl', 'wb') as f:
+    pickle.dump(top_features, f)
