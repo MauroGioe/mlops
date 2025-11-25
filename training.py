@@ -5,8 +5,16 @@ from sklearn.metrics import f1_score,precision_score,recall_score
 from sklearn.inspection import permutation_importance
 import mlflow
 import pickle
+import subprocess
 
-mlflow.set_experiment("Credit card fraud")
+
+experiment_name = "Credit card fraud"
+current_experiment=dict(mlflow.get_experiment_by_name(experiment_name))
+experiment_id=current_experiment['experiment_id']
+subprocess.run(["mlflow","experiments","delete","--experiment-id",f"{experiment_id}"])
+
+
+mlflow.set_experiment(experiment_name)
 train = pd.read_csv("./data/train.csv")
 test = pd.read_csv("./data/test.csv")
 
