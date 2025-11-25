@@ -8,7 +8,7 @@ model_name = "xgboost"
 model = mlflow.sklearn.load_model(f"models:/{model_name}/latest")
 
 df = pd.read_csv("./data/prod.csv")
-df = df.sample(frac=0.05)
+df = df.sample(frac=0.50)
 
 y = df["Class"]
 X = df.drop("Class", axis=1)
@@ -28,7 +28,7 @@ test_with_preds = X_test.assign(y_pred=y_predicted_test, y_pred_proba=y_predicte
 with open("top_features.pkl", "rb") as f:
     top_features =  pickle.load(f)
 
-udc = nml.UnivariateDriftCalculator(column_names=top_features, chunk_number=1)
+udc = nml.UnivariateDriftCalculator(column_names=top_features, chunk_number=6)
 
 
 udc.fit(test)
@@ -38,7 +38,7 @@ figure = univariate_data_drift.plot(kind='drift')
 figure.show()
 
 estimator = nml.CBPE(y_pred_proba='y_pred_proba', y_pred='y_pred', y_true='Class', metrics=['f1'],
-                     problem_type='classification_binary', chunk_number=1)
+                     problem_type='classification_binary', chunk_number=6)
 
 estimator.fit(test_with_preds)
 results = estimator.estimate(prod_with_preds)
