@@ -35,6 +35,7 @@ udc.fit(test)
 
 univariate_data_drift = udc.calculate(X)
 figure = univariate_data_drift.plot(kind='drift')
+figure.write_html('univariate drift.html')
 #figure.write_image("./univariate drift.png", format="png")
 #kaleido bug doesn't work with windows in V0.2
 figure.show()
@@ -45,6 +46,7 @@ estimator = nml.CBPE(y_pred_proba='y_pred_proba', y_pred='y_pred', y_true='Class
 estimator.fit(test_with_preds)
 results = estimator.estimate(prod_with_preds)
 metric_fig = results.plot()
+metric_fig.write_html('perfomance estimation.html')
 #metric_fig.write_image("./perfomance estimation.png")
 #kaleido bug doesn't work with windows in V0.2
 metric_fig.show()
