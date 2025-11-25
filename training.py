@@ -5,16 +5,15 @@ from sklearn.metrics import f1_score,precision_score,recall_score
 from sklearn.inspection import permutation_importance
 import mlflow
 import pickle
-import subprocess
+from time import gmtime, strftime
+
+
 
 
 experiment_name = "Credit card fraud"
-current_experiment=dict(mlflow.get_experiment_by_name(experiment_name))
-experiment_id=current_experiment['experiment_id']
-subprocess.run(["mlflow","experiments","delete","--experiment-id",f"{experiment_id}"])
-
-
 mlflow.set_experiment(experiment_name)
+
+
 train = pd.read_csv("./data/train.csv")
 test = pd.read_csv("./data/test.csv")
 
@@ -44,8 +43,9 @@ results = pd.DataFrame(grid_search.cv_results_)
 results = results[['params', 'mean_test_score', 'std_test_score']]
 max_run = results["mean_test_score"].idxmax()
 results = results.values
+excution_time = strftime("%Y-%m-%d_%H:%M:%S", gmtime())
 for i,run in enumerate(results):
-    with mlflow.start_run(run_name="cv_"+str(i)):
+    with mlflow.start_run(run_name=excution_time+"_cv_"+str(i)):
         mlflow.set_tag("model", "xgboost")
         # Log model configuration/params
         mlflow.log_params(run[0])
